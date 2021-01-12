@@ -17,10 +17,11 @@ class MovieBloc extends Bloc {
   final _movieGenreController = StreamController<int>();
   final _movieBeingDetailed = StreamController<MovieDetailsModel>.broadcast();
   final _movieListController = StreamController<List<MovieModel>>();
-  final _typingSearch = StreamController<String>.broadcast();
+  final _typingSearch = StreamController<String>();
 
   int _movieGenre = 28;
   List<MovieModel> _movieList = [];
+  String _typedText = '';
 
   Stream<int> get movieGenre => _movieGenreController.stream;
   Stream<List<MovieModel>> get movieList => _movieListController.stream;
@@ -29,10 +30,10 @@ class MovieBloc extends Bloc {
 
   void Function(MovieDetailsModel) get changeMovieBeingDetailed => _movieBeingDetailed.sink.add;
 
-  void changeMovieGenre(int genreID) {
+  void changeMovieGenre(int genreID, {bool searchTypedText = false}) {
     _movieGenre = genreID;
     _movieGenreController.sink.add(_movieGenre);
-    loadMovies();
+    searchTypedText ? loadMovies() : loadMoviesByTyping(_typedText);
   }
 
   void changeMovieList(List<MovieModel> newMovieList) {
@@ -40,9 +41,13 @@ class MovieBloc extends Bloc {
     _movieListController.sink.add(_movieList);
   }
 
-  void Function(String) get changeTypedText => _typingSearch.sink.add;
+  void changeTypedText(String text) {
+    _typedText = text;
+    _typingSearch.sink.add(_typedText);
+  }
 
   int get getMovieGenre => _movieGenre;
+  String get getTypedText => _typedText;
   List<MovieModel> get getMovieList => _movieList;
 
   Future<void> loadMovies() async {
@@ -54,7 +59,8 @@ class MovieBloc extends Bloc {
   }
 
   Future<void> loadMoviesByTyping(String typedText) async {
-    _movieListController.sink.add(await _movieService.searchByKeyword(typedText, _movieGenre));
+    List<MovieModel> list = (await _movieService.searchByKeyword(typedText)).where((element) => element.genreIds.contains(_movieGenre)).toList();
+    _movieListController.sink.add(list);
   }
 
   @override

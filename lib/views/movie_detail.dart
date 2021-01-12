@@ -31,7 +31,11 @@ class MovieDetail extends StatelessWidget {
             MovieDetailsModel movie = snapshot.data;
             String produtoras = movie.productionCompanies.map((e) => e.name).toList().toString().replaceAll('[', '').replaceAll(']', '').replaceAll(',', ', \n');
             String elenco = movie.credits.cast.where((element) => element.popularity > 10).map((e) => e.name).toList().toString().replaceAll('[', '').replaceAll(']', '');
+            String director = '';
             String budget = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',', initialValue: movie.budget / 1).text;
+
+            List crewList = movie.credits.crew.where((element) => element.job == 'Director').toList();
+            if (crewList.isNotEmpty) director = crewList.first.name;
 
             return ListView(
               children: [
@@ -55,6 +59,7 @@ class MovieDetail extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Text(
                     movie.title.toUpperCase(),
+                    textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headline1.copyWith(color: titleColor),
                   ),
                 ),
@@ -114,7 +119,7 @@ class MovieDetail extends StatelessWidget {
                 SizedBox(height: 40.0),
                 TextHistory(
                   title: 'Diretor',
-                  bodyText: movie.credits.crew.where((element) => element.job == 'Director').first.name,
+                  bodyText: director,
                 ),
                 SizedBox(height: 32.0),
                 TextHistory(

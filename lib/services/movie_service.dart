@@ -29,10 +29,10 @@ class MovieService {
     return movie;
   }
 
-  Future<List<MovieModel>> searchByKeyword(String keyword, int genreID) async {
+  Future<List<MovieModel>> searchByKeyword(String keyword) async {
     List<MovieModel> movies = List<MovieModel>();
     try {
-      Response response = await Dio().get(Endpoints.searchByKeyword(keyword, genreID));
+      Response response = await Dio().get(Endpoints.searchByKeyword(keyword));
       print(response);
       if (response.data != null) {
         movies = List<MovieModel>.from(response.data['results'].map((movies) => MovieModel.fromJson(movies)));
