@@ -7,7 +7,7 @@ class NoMovieFound extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
 
     return Container(
-      height: height / 1.75,
+      height: height / 2,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         image: DecorationImage(

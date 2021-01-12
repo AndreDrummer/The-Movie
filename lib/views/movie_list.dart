@@ -3,6 +3,7 @@ import 'package:movie/bloc/bloc_provider.dart';
 import 'package:movie/bloc/movie_bloc.dart';
 import 'package:movie/models/movie_model.dart';
 import 'package:movie/services/endpoints.dart';
+import 'package:movie/utils/debbouncer.dart';
 import 'package:movie/utils/routes.dart';
 import 'package:movie/widgets/badge.dart';
 import 'package:movie/widgets/box_search.dart';
@@ -11,10 +12,14 @@ import 'package:movie/widgets/loading_page.dart';
 import 'package:movie/widgets/no_movie_founded.dart';
 
 class MovieList extends StatelessWidget {
+  final _debouncer = Debouncer(milliseconds: 500);
+
   @override
   Widget build(BuildContext context) {
     final MovieBloc movieBloc = BlocProvider.of<MovieBloc>(context);
     return Scaffold(
+      resizeToAvoidBottomPadding: true,
+      resizeToAvoidBottomInset: true,
       body: Column(
         children: [
           Padding(
@@ -27,7 +32,21 @@ class MovieList extends StatelessWidget {
             ),
           ),
           // Deve ser capaz de guardar o texto digitado e fazer pesqusia na API.
-          BoxSearch(),
+          StreamBuilder<String>(
+            stream: movieBloc.typingSearch,
+            builder: (context, snapshot) {
+              return BoxSearch(
+                hintText: 'Pesquise Filmes',
+                onChanged: (value) {
+                  if (value.isEmpty) {
+                    movieBloc.loadMovies();
+                  } else {
+                    _debouncer.run(() => movieBloc.loadMoviesByTyping(value));
+                  }
+                },
+              );
+            },
+          ),
           StreamBuilder<int>(
             stream: movieBloc.movieGenre,
             builder: (context, snapshot) {
@@ -80,12 +99,13 @@ class MovieList extends StatelessWidget {
 
               return Expanded(
                 child: ListView.builder(
+                  key: UniqueKey(),
                   itemCount: movies.length,
                   itemBuilder: (BuildContext context, int index) {
                     return CardMovie(
                       title: movies[index].title,
                       genreIDs: movies[index].genreIds,
-                      imageUrl: Endpoints.getImageMovie(movies[index].backdropPath),
+                      imageUrl: Endpoints.getImageMovie(movies[index].posterPath),
                       onClick: () {
                         movieBloc.loadMovieDetail(movies[index].id);
                         Navigator.pushNamed(context, MovieRouter.MOVIE_DETAIL);
