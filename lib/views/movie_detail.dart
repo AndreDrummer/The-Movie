@@ -15,14 +15,14 @@ class MovieDetail extends StatelessWidget {
       body: ListView(
         children: [
           ButtonBack(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 72.0),
-            child: Container(
-              height: 318,
-              width: 216,
-              child: CardMovie(showTitle: false),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 72.0),
+          //   child: Container(
+          //     height: 318,
+          //     width: 216,
+          //     child: CardMovie(),
+          //   ),
+          // ),
           SizedBox(height: 32.0),
           TextRating(),
           SizedBox(height: 32.0),

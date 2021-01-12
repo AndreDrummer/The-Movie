@@ -10,12 +10,10 @@ class BoxSearch extends StatelessWidget {
         borderRadius: BorderRadius.circular(25),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(48.0, 14.0, 161.0, 16.0),
+        padding: const EdgeInsets.fromLTRB(48.0, 14.0, 151.0, 16.0),
         child: Row(
           children: [
             Container(
-              // width: 14,
-              // height: 14,
               child: Icon(
                 Icons.search,
                 size: 18,

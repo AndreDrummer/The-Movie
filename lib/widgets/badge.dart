@@ -2,34 +2,43 @@ import 'package:flutter/material.dart';
 
 class Badge extends StatelessWidget {
   Badge({
-    this.isSelected = false,
+    this.selectedGenreID = 28,
+    this.onTouch,
     this.title = 'Ação',
+    this.id,
   });
 
-  final bool isSelected;
+  final int selectedGenreID;
   final String title;
+  final Function onTouch;
+  final id;
 
   final Color selectedColor = Color(0XFF00384C);
   final Color borderColor = Color(0XFFF1F3F5);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      margin: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        color: isSelected ? selectedColor : Colors.white,
-        borderRadius: BorderRadius.circular(25),
-        border: Border.all(
-          style: BorderStyle.solid,
-          color: isSelected ? selectedColor : borderColor,
+    final bool isSelected = selectedGenreID == id;
+
+    return GestureDetector(
+      onTap: () => onTouch(),
+      child: Container(
+        alignment: Alignment.center,
+        margin: const EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          color: isSelected ? selectedColor : Colors.white,
+          borderRadius: BorderRadius.circular(25),
+          border: Border.all(
+            style: BorderStyle.solid,
+            color: isSelected ? selectedColor : borderColor,
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
-        child: Text(
-          title,
-          style: Theme.of(context).textTheme.caption.copyWith(fontSize: 12.0, color: isSelected ? Colors.white : selectedColor),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.caption.copyWith(fontSize: 12.0, color: isSelected ? Colors.white : selectedColor),
+          ),
         ),
       ),
     );
