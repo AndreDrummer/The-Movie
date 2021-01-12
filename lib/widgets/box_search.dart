@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class BoxSearch extends StatelessWidget {
-  BoxSearch({    
+  BoxSearch({
     this.onChanged,
     this.hintText,
   });
@@ -18,8 +19,9 @@ class BoxSearch extends StatelessWidget {
           borderRadius: BorderRadius.circular(25),
           color: Color(0XFFF1F3F5),
         ),
-        child: TextField(          
+        child: TextField(
           cursorColor: Colors.black,
+          textInputAction: TextInputAction.go,
           decoration: InputDecoration(
             prefixIcon: Icon(
               Icons.search,

@@ -41,6 +41,7 @@ class MovieList extends StatelessWidget {
                   if (value.isEmpty) {
                     movieBloc.loadMovies();
                   } else {
+                    movieBloc.changeTypedText(value);
                     _debouncer.run(() => movieBloc.loadMoviesByTyping(value));
                   }
                 },
@@ -59,25 +60,33 @@ class MovieList extends StatelessWidget {
                       title: 'Ação',
                       id: 28,
                       selectedGenreID: snapshot.data,
-                      onTouch: () => movieBloc.changeMovieGenre(28, searchTypedText: movieBloc.getTypedText.isEmpty),
+                      onTouch: () => movieBloc.changeMovieGenre(
+                        28,
+                      ),
                     ),
                     Badge(
                       title: 'Aventura',
                       id: 12,
                       selectedGenreID: snapshot.data,
-                      onTouch: () => movieBloc.changeMovieGenre(12, searchTypedText: movieBloc.getTypedText.isEmpty),
+                      onTouch: () => movieBloc.changeMovieGenre(
+                        12,
+                      ),
                     ),
                     Badge(
                       title: 'Fantasia',
                       id: 14,
                       selectedGenreID: snapshot.data,
-                      onTouch: () => movieBloc.changeMovieGenre(14, searchTypedText: movieBloc.getTypedText.isEmpty),
+                      onTouch: () => movieBloc.changeMovieGenre(
+                        14,
+                      ),
                     ),
                     Badge(
                       title: 'Comédia',
                       id: 35,
                       selectedGenreID: snapshot.data,
-                      onTouch: () => movieBloc.changeMovieGenre(35, searchTypedText: movieBloc.getTypedText.isEmpty),
+                      onTouch: () => movieBloc.changeMovieGenre(
+                        35,
+                      ),
                     ),
                   ],
                 ),
