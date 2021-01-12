@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movie/bloc/bloc_provider.dart';
 import 'package:movie/bloc/movie_bloc.dart';
 import 'package:movie/models/movie_model.dart';
+import 'package:movie/services/endpoints.dart';
 import 'package:movie/utils/routes.dart';
 import 'package:movie/widgets/badge.dart';
 import 'package:movie/widgets/box_search.dart';
@@ -86,9 +87,11 @@ class MovieList extends StatelessWidget {
                     itemCount: movies.length,
                     itemBuilder: (BuildContext context, int index) {
                       return CardMovie(
-                        imageUrl: movies[index].backdropPath,
+                        title: movies[index].title,
+                        genreIDs: movies[index].genreIds,
+                        imageUrl: Endpoints.getImageMovie(movies[index].backdropPath),
                         onClick: () {
-                          Navigator.pushNamed(context, MovieRouter.MOVIE_DETAIL);
+                          Navigator.pushNamed(context, MovieRouter.MOVIE_DETAIL, arguments: movies[index]);
                         },
                       );
                     },
