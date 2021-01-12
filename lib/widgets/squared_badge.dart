@@ -35,7 +35,11 @@ class SquaredBadge extends StatelessWidget {
                   ),
                   Text(
                     text2,
-                    style: Theme.of(context).textTheme.headline1.copyWith(color: Color(0XFF343A40), fontSize: 14.0),
+                    textScaleFactor: text2.length > 30 ? 0.9 : 1,
+                    style: Theme.of(context).textTheme.headline1.copyWith(
+                          color: Color(0XFF343A40),
+                          fontSize: text2.length > 30 ? 10 : 12.0,
+                        ),
                   ),
                 ],
               ),

@@ -20,6 +20,7 @@ class CardMovie extends StatelessWidget {
     genreIDs.forEach((element) {
       subTitles.add(CommomFunctions.getGenreByID(element));
     });
+    subTitles.removeWhere((element) => element == null);
 
     return GestureDetector(
       onTap: () => onClick(),
@@ -56,7 +57,7 @@ class CardMovie extends StatelessWidget {
                 Row(
                   children: subTitles.map((subtitle) {
                     return Text(
-                      subtitle ?? '' + (subTitles.indexOf(subtitle) < subTitles.length - 1 ? ' - ' : ''),
+                      subtitle + (subTitles.indexOf(subtitle) < subTitles.length - 1 ? ' - ' : ''),
                       style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white, fontSize: 10.0),
                     );
                   }).toList(),

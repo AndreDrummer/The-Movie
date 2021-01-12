@@ -15,7 +15,7 @@ class MovieBloc extends Bloc {
   }
 
   final _movieGenreController = StreamController<int>();
-  final _movieBeingDetailed = StreamController<MovieDetailsModel>();
+  final _movieBeingDetailed = StreamController<MovieDetailsModel>.broadcast();
   final _movieListController = StreamController<List<MovieModel>>();
 
   int _movieGenre = 28;
@@ -43,6 +43,10 @@ class MovieBloc extends Bloc {
 
   Future<void> loadMovies() async {
     _movieListController.sink.add(await movieService.getMovieByGenre(_movieGenre));
+  }
+
+  Future<void> loadMovieDetail(int movieID) async {
+    _movieBeingDetailed.sink.add(await movieService.getMovieDetail(movieID));
   }
 
   @override

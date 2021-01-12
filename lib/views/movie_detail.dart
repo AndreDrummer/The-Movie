@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:movie/bloc/bloc_provider.dart';
 import 'package:movie/bloc/movie_bloc.dart';
 import 'package:movie/models/movie_details_model.dart';
 import 'package:movie/services/endpoints.dart';
@@ -17,7 +18,7 @@ class MovieDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MovieBloc movieBloc = MovieBloc();
+    final MovieBloc movieBloc = BlocProvider.of<MovieBloc>(context);
 
     return Scaffold(
       body: StreamBuilder<MovieDetailsModel>(
@@ -28,6 +29,9 @@ class MovieDetail extends StatelessWidget {
             }
 
             MovieDetailsModel movie = snapshot.data;
+            String produtoras = movie.productionCompanies.map((e) => e.name).toList().toString().replaceAll('[', '').replaceAll(']', '').replaceAll(',', ', \n');
+            String elenco = movie.credits.cast.where((element) => element.popularity > 10).map((e) => e.name).toList().toString().replaceAll('[', '').replaceAll(']', '');
+            String budget = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',', initialValue: movie.budget / 1).text;
 
             return ListView(
               children: [
@@ -43,7 +47,9 @@ class MovieDetail extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 32.0),
-                TextRating(),
+                TextRating(
+                  rating: movie.voteAverage.toString(),
+                ),
                 SizedBox(height: 32.0),
                 Container(
                   alignment: Alignment.center,
@@ -75,13 +81,18 @@ class MovieDetail extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 18.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: movie.genres
-                      .map(
-                        (genre) => SquaredBadge(backgroundColor: Theme.of(context).canvasColor, text: genre.name.toUpperCase()),
-                      )
-                      .toList(),
+                Container(
+                  alignment: Alignment.center,
+                  height: 45,
+                  child: ListView(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    children: movie.genres
+                        .map(
+                          (genre) => SquaredBadge(backgroundColor: Theme.of(context).canvasColor, text: genre.name.toUpperCase()),
+                        )
+                        .toList(),
+                  ),
                 ),
                 SizedBox(height: 63.0),
                 TextHistory(title: 'DESCRIÇÃO', bodyText: movie.overview),
@@ -90,25 +101,25 @@ class MovieDetail extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: SquaredBadge(
                     text: 'ORÇAMENTO',
-                    text2: '\$ ${MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',', initialValue: movie.budget / 1)}',
+                    text2: '${movie.budget == 0 ? '-' : '\$ $budget'}',
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: SquaredBadge(
                     text: 'PRODUTORAS',
-                    text2: movie.productionCompanies.map((e) => e.name).toList().toString(),
+                    text2: produtoras,
                   ),
                 ),
                 SizedBox(height: 40.0),
                 TextHistory(
                   title: 'Diretor',
-                  bodyText: 'Ryan Fleck, Anna Boden',
+                  bodyText: movie.credits.crew.where((element) => element.job == 'Director').first.name,
                 ),
                 SizedBox(height: 32.0),
                 TextHistory(
                   title: 'Elenco',
-                  bodyText: 'Brie Larson, Samuel L. Jackson, Ben Mendelsohn, Djimon Hounsou, Lee Pace',
+                  bodyText: elenco,
                 ),
                 SizedBox(height: 90.0),
               ],
