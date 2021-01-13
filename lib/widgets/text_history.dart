@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 
 class TextHistory extends StatelessWidget {
   TextHistory({
-    this.bodyText,
     this.title,
+    this.bodyText,
   });
 
   final String title;
   final String bodyText;
+
   @override
   Widget build(BuildContext context) {
     return Container(

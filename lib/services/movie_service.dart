@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:movie/models/movie_details_model.dart';
 import 'package:movie/models/movie_model.dart';
 import 'package:movie/services/endpoints.dart';
+import 'package:movie/models/movie_details_model.dart';
 
 class MovieService {
   Future<List<MovieModel>> getMovieByGenre(int genreID) async {
@@ -33,7 +33,6 @@ class MovieService {
     List<MovieModel> movies = List<MovieModel>();
     try {
       Response response = await Dio().get(Endpoints.searchByKeyword(keyword));
-      print(response);
       if (response.data != null) {
         movies = List<MovieModel>.from(response.data['results'].map((movies) => MovieModel.fromJson(movies)));
       }

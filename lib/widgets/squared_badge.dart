@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 class SquaredBadge extends StatelessWidget {
   SquaredBadge({
-    @required this.text,
     this.text2 = '',
+    @required this.text,
     this.backgroundColor = const Color(0XFFF1F3F5),
   });
 
-  final Color backgroundColor;
   final String text;
   final String text2;
+  final Color backgroundColor;
   final Color borderColor = Color(0XFFF1F3F5);
 
   @override

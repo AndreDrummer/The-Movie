@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:movie/bloc/bloc_provider.dart';
-import 'package:movie/bloc/movie_bloc.dart';
 import 'package:movie/utils/routes.dart';
-import 'package:movie/views/movie_detail.dart';
+import 'package:movie/bloc/movie_bloc.dart';
 import 'package:movie/views/movie_list.dart';
+import 'package:movie/views/movie_detail.dart';
+import 'package:movie/bloc/bloc_provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(Movie());
@@ -41,7 +41,8 @@ class Movie extends StatelessWidget {
                   ),
                 ),
           ),
-          primarySwatch: Colors.blue,
+          primaryColor: Color(0XFF00384C),
+          primarySwatch: Colors.grey,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         routes: {

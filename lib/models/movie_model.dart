@@ -1,68 +1,69 @@
 class MovieModel {
-  bool adult;
-  String backdropPath;
-  List<int> genreIds;
   int id;
-  String originalLanguage;
-  String originalTitle;
+  bool adult;
+  bool video;
+  String title;
+  int voteCount;
   String overview;
   double popularity;
   String posterPath;
   String releaseDate;
-  String title;
-  bool video;
+  List<int> genreIds;
   double voteAverage;
-  int voteCount;
+  String backdropPath;
+  String originalTitle;
+  String originalLanguage;
 
-  MovieModel(
-      {this.adult,
-      this.backdropPath,
-      this.genreIds,
-      this.id,
-      this.originalLanguage,
-      this.originalTitle,
-      this.overview,
-      this.popularity,
-      this.posterPath,
-      this.releaseDate,
-      this.title,
-      this.video,
-      this.voteAverage,
-      this.voteCount});
+  MovieModel({
+    this.id,
+    this.video,
+    this.title,
+    this.adult,
+    this.overview,
+    this.genreIds,
+    this.voteCount,
+    this.popularity,
+    this.posterPath,
+    this.voteAverage,
+    this.releaseDate,
+    this.backdropPath,
+    this.originalTitle,
+    this.originalLanguage,
+  });
 
   MovieModel.fromJson(Map<String, dynamic> json) {
-    adult = json['adult'];
-    backdropPath = json['backdrop_path'];
-    genreIds = json['genre_ids'].cast<int>();
     id = json['id'];
-    originalLanguage = json['original_language'];
-    originalTitle = json['original_title'];
+    adult = json['adult'];
+    title = json['title'];
+    video = json['video'];
     overview = json['overview'];
+    voteCount = json['vote_count'];
     popularity = json['popularity'];
     posterPath = json['poster_path'];
     releaseDate = json['release_date'];
-    title = json['title'];
-    video = json['video'];
+    backdropPath = json['backdrop_path'];
+    originalTitle = json['original_title'];
+    genreIds = json['genre_ids'].cast<int>();
+    originalLanguage = json['original_language'];
     voteAverage = json['vote_average'].runtimeType == int ? double.parse(json['vote_average'].toString() + '.0') : json['vote_average'];
-    voteCount = json['vote_count'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['adult'] = this.adult;
-    data['backdrop_path'] = this.backdropPath;
-    data['genre_ids'] = this.genreIds;
     data['id'] = this.id;
-    data['original_language'] = this.originalLanguage;
-    data['original_title'] = this.originalTitle;
-    data['overview'] = this.overview;
-    data['popularity'] = this.popularity;
-    data['poster_path'] = this.posterPath;
-    data['release_date'] = this.releaseDate;
+    data['adult'] = this.adult;
     data['title'] = this.title;
     data['video'] = this.video;
-    data['vote_average'] = this.voteAverage;
+    data['overview'] = this.overview;
+    data['genre_ids'] = this.genreIds;
     data['vote_count'] = this.voteCount;
+    data['popularity'] = this.popularity;
+    data['poster_path'] = this.posterPath;
+    data['vote_average'] = this.voteAverage;
+    data['release_date'] = this.releaseDate;
+    data['backdrop_path'] = this.backdropPath;
+    data['original_title'] = this.originalTitle;
+    data['original_language'] = this.originalLanguage;
     return data;
   }
 }

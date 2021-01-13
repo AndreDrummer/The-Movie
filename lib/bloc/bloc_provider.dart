@@ -3,14 +3,14 @@ import 'package:movie/bloc/bloc.dart';
 
 class BlocProvider<T extends Bloc> extends InheritedWidget {
   BlocProvider({
+    this.key,
     this.bloc,
     this.child,
-    this.key,
   }) : super(key: key);
 
-  final Widget child;
   final T bloc;
   final Key key;
+  final Widget child;
 
   bool updateShouldNotify(_) => true;
 

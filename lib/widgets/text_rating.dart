@@ -4,7 +4,9 @@ class TextRating extends StatelessWidget {
   TextRating({
     this.rating,
   });
+
   final String rating;
+
   @override
   Widget build(BuildContext context) {
     return Row(

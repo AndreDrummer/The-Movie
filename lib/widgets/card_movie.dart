@@ -29,15 +29,21 @@ class CardMovie extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-            child: Container(
-              width: 320,
-              height: 470,
-              child: ClipRRect(
+            child: Card(
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25),
-                child: FadeInImage(
-                  placeholder: AssetImage('assets/movie_placeholder.png'),
-                  image: NetworkImage(imageUrl),
-                  fit: BoxFit.cover,
+              ),
+              elevation: 6.0,
+              child: Container(
+                width: 320,
+                height: 470,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(25),
+                  child: Image.network(
+                    imageUrl,
+                    loadingBuilder: loadingImage,
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
             ),
@@ -65,6 +71,20 @@ class CardMovie extends StatelessWidget {
               ],
             ),
           )
+        ],
+      ),
+    );
+  }
+
+  Widget loadingImage(BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+    if (loadingProgress == null) return child;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Carregando imagem..'),
+          SizedBox(height: 30),
+          CircularProgressIndicator(),
         ],
       ),
     );

@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 
 class BoxSearch extends StatelessWidget {
   BoxSearch({
-    this.onChanged,
     this.hintText,
+    this.onChanged,
   });
 
   final String hintText;

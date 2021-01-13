@@ -1,10 +1,9 @@
 import 'dart:async';
-
+import 'package:rxdart/rxdart.dart';
 import 'package:movie/bloc/bloc.dart';
-import 'package:movie/models/movie_details_model.dart';
 import 'package:movie/models/movie_model.dart';
 import 'package:movie/services/movie_service.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:movie/models/movie_details_model.dart';
 
 class MovieBloc extends Bloc {
   MovieService _movieService = MovieService();

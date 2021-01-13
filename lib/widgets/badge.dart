@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 
 class Badge extends StatelessWidget {
   Badge({
-    this.selectedGenreID = 28,
+    this.id,
     this.onTouch,
     this.title = 'Ação',
-    this.id,
+    this.selectedGenreID = 28,
   });
 
-  final int selectedGenreID;
-  final String title;
-  final Function onTouch;
   final id;
+  final String title;
+  final int selectedGenreID;
+  final Function onTouch;
 
   final Color selectedColor = Color(0XFF00384C);
   final Color borderColor = Color(0XFFF1F3F5);
