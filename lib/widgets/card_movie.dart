@@ -8,12 +8,16 @@ class CardMovie extends StatelessWidget {
     this.title = '',
     this.genreIDs = const [],
     @required this.imageUrl,
+    this.height = 470,
+    this.width = 320,
   });
 
   final Function onClick;
   final String title;
   final List<int> genreIDs;
   final String imageUrl;
+  final double width;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +40,14 @@ class CardMovie extends StatelessWidget {
               ),
               elevation: 6.0,
               child: Container(
-                width: 320,
-                height: 470,
+                width: width,
+                height: height,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
                     imageUrl: imageUrl,
                     placeholder: placeholderImage,
-                    fit: BoxFit.fill,
+                    fit: BoxFit.cover,
                     errorWidget: (context, url, error) => Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

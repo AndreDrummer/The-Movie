@@ -4,13 +4,11 @@ import 'package:flutter/services.dart';
 class BoxSearch extends StatelessWidget {
   BoxSearch({
     this.hintText,
-    this.initialValue,
     this.onChanged,
   });
 
   final String hintText;
   final Function(String) onChanged;
-  final String initialValue;
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +20,8 @@ class BoxSearch extends StatelessWidget {
           color: Color(0XFFF1F3F5),
         ),
         child: TextFormField(
-          initialValue: initialValue,
           cursorColor: Colors.black,
-          textInputAction: TextInputAction.none,
+          textInputAction: TextInputAction.go,
           decoration: InputDecoration(
             prefixIcon: Icon(
               Icons.search,

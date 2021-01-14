@@ -15,7 +15,7 @@ class NoMovieFound extends StatelessWidget {
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/popcorn.png'),
-          fit: BoxFit.fitWidth,
+          fit: BoxFit.fill,
         ),
       ),
       child: Padding(
@@ -23,6 +23,7 @@ class NoMovieFound extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(height: 30),
             Text(
               'Nenhum filme encontrado!',
               style: Theme.of(context).textTheme.caption.copyWith(fontSize: 25),
@@ -30,13 +31,12 @@ class NoMovieFound extends StatelessWidget {
             !connected
                 ? Column(
                     children: [
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Icon(Icons.wifi_off, color: Colors.red),
+                      SizedBox(height: 20),
+                      Icon(Icons.wifi_off, size: 28),
+                      SizedBox(height: 15),
                       Text(
                         'Verifique sua conexão com a internet!',
-                        style: Theme.of(context).textTheme.caption.copyWith(fontSize: 12, color: Colors.red),
+                        style: Theme.of(context).textTheme.caption,
                       ),
                     ],
                   )

@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 
 class ButtonBack extends StatelessWidget {
+  ButtonBack({
+    this.callback,
+  });
+
   final Color textColor = Color(0XFF6D7070);
   final Color buttonColor = Color(0XFFFAFAFA);
+  final Function() callback;
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     return GestureDetector(
-      onTap: () {
-        Navigator.maybePop(context);
-      },
+      onTap: () => callback(),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20.0, 48.0, 260.0, 65.0),
+        padding: EdgeInsets.fromLTRB(20.0, 48.0, width / 1.5, 65.0),
         child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100),

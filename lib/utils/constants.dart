@@ -1,6 +1,7 @@
 enum CacheKEY {
-  lastListMovieSaved,
-  movieDetailListSaved,
+  lastMoviesListLoaded,
+  lastMoviesListByGenre,
+  movieDetails,
 }
 
 class Constantes {

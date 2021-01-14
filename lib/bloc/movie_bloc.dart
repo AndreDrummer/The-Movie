@@ -1,24 +1,25 @@
 import 'dart:async';
-import 'package:movie/data/cache.dart';
-import 'package:movie/providers/connection_provider.dart';
+import 'dart:convert';
 import 'package:rxdart/rxdart.dart';
 import 'package:movie/bloc/bloc.dart';
+import 'package:movie/data/cache.dart';
+import 'package:movie/utils/constants.dart';
 import 'package:movie/models/movie_model.dart';
 import 'package:movie/services/movie_service.dart';
 import 'package:movie/models/movie_details_model.dart';
+import 'package:movie/providers/connection_provider.dart';
 
 class MovieBloc extends Bloc {
   MovieBloc(this._connectionProvider);
-
   ConnectionProvider _connectionProvider;
+
   MovieService _movieService = MovieService();
-  CacheRestApi cacheRestApi = CacheRestApi();
 
   final _typingSearch = BehaviorSubject<String>.seeded('');
-  final _isLoadingMovies = BehaviorSubject<bool>.seeded(true);
+  final _isLoadingMovies = BehaviorSubject<bool>.seeded(false);
   final _movieGenreController = BehaviorSubject<int>.seeded(28);
   final _movieListController = BehaviorSubject<List<MovieModel>>.seeded([]);
-  final _movieBeingDetailed = StreamController<MovieDetailsModel>.broadcast();
+  final _movieBeingDetailed = BehaviorSubject<MovieDetailsModel>();
 
   Stream<String> get typingSearch => _typingSearch.stream;
   Stream<int> get movieGenre => _movieGenreController.stream;
@@ -41,55 +42,91 @@ class MovieBloc extends Bloc {
   int get getMovieGenre => _movieGenreController.value;
   bool get getIsLoadingMovies => _isLoadingMovies.value;
   List<MovieModel> get getMovieList => _movieListController.value;
+  MovieDetailsModel get getMovieBeingDetailed => _movieBeingDetailed.value;
 
   Future<void> loadMovies() async {
-    if (!_connectionProvider.getIsConnectedStatus) {
-      changeIsLoadingMovies(true);
-      await retrieveDataFromCache();
-      changeIsLoadingMovies(false);
-    } else if (getTypedText.isEmpty) {
-      changeIsLoadingMovies(true);
+    retrieveListMovie();
+    if (getTypedText.isEmpty && _connectionProvider.getIsConnectedStatus) {
+      if (getMovieList.isEmpty) changeIsLoadingMovies(true);
       List<MovieModel> movies = await _movieService.getMovieByGenre(getMovieGenre);
+      if (getIsLoadingMovies) changeIsLoadingMovies(false);
       changeMovieList(movies);
-      cacheData(movies);
-      changeIsLoadingMovies(false);
+      cacheListMovie(movies);
     } else {
       await loadMoviesByTyping();
     }
   }
 
   Future<void> loadMovieDetail(int movieID) async {
-    _movieBeingDetailed.sink.add(await _movieService.getMovieDetail(movieID));
+    if (_connectionProvider.getIsConnectedStatus) {
+      MovieDetailsModel movie = await _movieService.getMovieDetail(movieID);
+      changeMovieBeingDetailed(movie);
+      cacheMovieDetails(movie);
+    }
   }
 
   Future<void> loadMoviesByTyping() async {
     if (!_connectionProvider.getIsConnectedStatus) {
       changeMovieList([]);
     } else {
-      print('Call loading Movies Typed');
       changeIsLoadingMovies(true);
       List<MovieModel> movies = (await _movieService.searchByKeyword(getTypedText)).where((element) => element.genreIds.contains(getMovieGenre)).toList();
       changeMovieList(movies);
-      cacheData(movies);
+      cacheListMovie(movies);
       changeIsLoadingMovies(false);
     }
   }
 
-  Future<void> retrieveDataFromCache() async {
-    print(getMovieGenre);
+  void cacheListMovie(List<MovieModel> movies) {
+    List<Map<String, dynamic>> cachedData = movies.map((e) => e.toJson()).toList();
+    CacheRestApi.saveMap(getMovieGenre.toString(), {CacheKEY.lastMoviesListByGenre.toString(): cachedData});
+    CacheRestApi.saveMap(CacheKEY.lastMoviesListLoaded.toString(), {CacheKEY.lastMoviesListLoaded.toString(): cachedData});
+  }
+
+  Future<void> cacheMovieDetails(MovieDetailsModel movieDetail) async {
+    Map<String, dynamic> storedList = await CacheRestApi.getMap(CacheKEY.movieDetails.toString());
+
+    if (storedList != null) {
+      storedList.putIfAbsent(movieDetail.id.toString(), () => json.encode(movieDetail.toJson()));
+      CacheRestApi.saveMap(CacheKEY.movieDetails.toString(), storedList);
+    } else {
+      CacheRestApi.saveMap(CacheKEY.movieDetails.toString(), {
+        movieDetail.id.toString(): json.encode(movieDetail.toJson()),
+      });
+    }
+  }
+
+  Future<void> retrieveListMovie() async {
     Map<String, dynamic> mapMovies = await CacheRestApi.getMap(getMovieGenre.toString());
+    Map<String, dynamic> lastMoviesLoaded = await CacheRestApi.getMap(CacheKEY.lastMoviesListLoaded.toString());
+
     if (mapMovies != null) {
-      List<MovieModel> movies = List<MovieModel>.from((mapMovies['lastMovieList'] as List).map((movie) => MovieModel.fromJson(movie)));
+      List<MovieModel> movies = List<MovieModel>.from((mapMovies[CacheKEY.lastMoviesListByGenre.toString()] as List).map((movie) => MovieModel.fromJson(movie)));
+      changeMovieList(movies);
       print(movies.length);
+    } else if (lastMoviesLoaded != null) {
+      List<MovieModel> movies = List<MovieModel>();
+      movies = (lastMoviesLoaded[CacheKEY.lastMoviesListLoaded.toString()] as List).where((mv) => mv['genre_ids'].contains(getMovieGenre)).map((movie) => MovieModel.fromJson(movie)).toList();
       changeMovieList(movies);
     } else {
       changeMovieList([]);
     }
   }
 
-  void cacheData(List<MovieModel> movies) {
-    List<Map<String, dynamic>> cachedData = movies.map((e) => e.toJson()).toList();
-    CacheRestApi.saveMap(getMovieGenre.toString(), {'lastMovieList': cachedData});
+  Future<void> retriveMovieDetails(int movieID) async {
+    Map<String, dynamic> storedList = await CacheRestApi.getMap(CacheKEY.movieDetails.toString());
+
+    if (storedList != null) {
+      List<int> cachedMovieIds = storedList.keys.map((e) => int.parse(e)).toList();
+
+      if (cachedMovieIds.contains(movieID)) {
+        changeMovieBeingDetailed(MovieDetailsModel.fromJson(storedList['$movieID']));
+      } else {
+        await loadMovieDetail(movieID);
+      }
+    } else {
+      await loadMovieDetail(movieID);
+    }
   }
 
   @override

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:movie/bloc/movie_bloc.dart';
-import 'package:movie/providers/connection_provider.dart';
 import 'package:movie/utils/functions.dart';
 import 'package:movie/bloc/bloc_provider.dart';
 import 'package:movie/widgets/card_movie.dart';
 import 'package:movie/services/endpoints.dart';
 import 'package:movie/widgets/button_back.dart';
-import 'package:movie/widgets/no_connection.dart';
 import 'package:movie/widgets/text_rating.dart';
 import 'package:movie/widgets/loading_page.dart';
 import 'package:movie/widgets/text_history.dart';
 import 'package:movie/widgets/squared_badge.dart';
+import 'package:movie/widgets/no_connection.dart';
 import 'package:movie/models/movie_details_model.dart';
+import 'package:movie/providers/connection_provider.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
-import 'package:provider/provider.dart';
 
 class MovieDetail extends StatelessWidget {
   final Color titleColor = Color(0XFF343A40);
@@ -23,36 +23,35 @@ class MovieDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     final MovieBloc movieBloc = BlocProvider.of<MovieBloc>(context);
     final ConnectionProvider connectionProvider = Provider.of<ConnectionProvider>(context);
-    final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: ListView(
         children: [
-          ButtonBack(),
+          ButtonBack(
+            callback: () {
+              movieBloc.changeMovieBeingDetailed(null);
+              Navigator.maybePop(context);
+            },
+          ),
           StreamBuilder<Object>(
             initialData: connectionProvider.getIsConnectedStatus,
             stream: connectionProvider.isConnected,
             builder: (context, snapshotConnection) {
-              if (!snapshotConnection.data) {
+              if (!snapshotConnection.data && movieBloc.getMovieBeingDetailed == null) {
                 return NoConnection();
               }
               return Column(
                 children: [
                   StreamBuilder<MovieDetailsModel>(
                     stream: movieBloc.movieBeingDetailed,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Column(
-                          children: [
-                            SizedBox(height: height / 3),
-                            LoadingPage(
-                              textLoading: 'Carregando detalhes do filme...',
-                            ),
-                          ],
+                    builder: (context, snapshotMovieDetail) {
+                      if (snapshotMovieDetail.connectionState == ConnectionState.waiting) {
+                        return LoadingPage(
+                          textLoading: 'Carregando detalhes do filme...',
                         );
                       }
 
-                      MovieDetailsModel movie = snapshot.data;
+                      MovieDetailsModel movie = snapshotMovieDetail.data;
                       String produtoras = movie.productionCompanies.map((e) => e.name).toList().toString().replaceAll('[', '').replaceAll(']', '').replaceAll(',', ', \n');
                       String elenco = movie.credits.cast.where((element) => element.popularity > 10).map((e) => e.name).toList().toString().replaceAll('[', '').replaceAll(']', '');
                       String director = '';
@@ -66,13 +65,11 @@ class MovieDetail extends StatelessWidget {
                         physics: ScrollPhysics(),
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 72.0),
-                            child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 62),
+                            child: CardMovie(
                               height: 318,
                               width: 216,
-                              child: CardMovie(
-                                imageUrl: Endpoints.getImageMovie(movie.backdropPath),
-                              ),
+                              imageUrl: Endpoints.getImageMovie(movie.posterPath),
                             ),
                           ),
                           SizedBox(height: 32.0),
@@ -81,6 +78,7 @@ class MovieDetail extends StatelessWidget {
                           ),
                           SizedBox(height: 32.0),
                           Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 15),
                             alignment: Alignment.center,
                             child: Text(
                               movie.title.toUpperCase(),
@@ -91,9 +89,18 @@ class MovieDetail extends StatelessWidget {
                           SizedBox(height: 12.0),
                           Container(
                             alignment: Alignment.center,
-                            child: Text(
-                              'Título Original: ${movie.originalTitle}',
-                              style: Theme.of(context).textTheme.caption.copyWith(fontSize: 10, color: subTitleColor),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Título Original: ',
+                                  style: Theme.of(context).textTheme.caption.copyWith(fontSize: 10, color: subTitleColor),
+                                ),
+                                Text(
+                                  '${movie.originalTitle}',
+                                  style: Theme.of(context).textTheme.caption.copyWith(fontSize: 10, color: subTitleColor, fontWeight: FontWeight.w500),
+                                ),
+                              ],
                             ),
                           ),
                           SizedBox(height: 32.0),
@@ -125,7 +132,7 @@ class MovieDetail extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 63.0),
-                          TextHistory(title: 'DESCRIÇÃO', bodyText: movie.overview),
+                          TextHistory(title: 'Descrição', bodyText: movie.overview),
                           SizedBox(height: 40.0),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20.0),

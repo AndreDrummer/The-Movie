@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movie/providers/connection_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:movie/utils/routes.dart';
 import 'package:movie/widgets/badge.dart';
 import 'package:movie/bloc/movie_bloc.dart';
@@ -11,7 +11,7 @@ import 'package:movie/bloc/bloc_provider.dart';
 import 'package:movie/services/endpoints.dart';
 import 'package:movie/widgets/loading_page.dart';
 import 'package:movie/widgets/no_movie_founded.dart';
-import 'package:provider/provider.dart';
+import 'package:movie/providers/connection_provider.dart';
 
 class MovieList extends StatefulWidget {
   @override
@@ -28,12 +28,11 @@ class _MovieListState extends State<MovieList> {
     connectionProvider = Provider.of<ConnectionProvider>(context);
     movieBloc = BlocProvider.of<MovieBloc>(context);
     if (!connectionProvider.getIsConnectedStatus) {
-      print('Vai lá');
-      movieBloc.retrieveDataFromCache();
+      movieBloc.retrieveListMovie();
     }
-    if (movieBloc.getMovieList.isEmpty) {
-      movieBloc.loadMovies();
-    }
+    // if (movieBloc.getMovieList.isEmpty) {
+    // }
+    movieBloc.loadMovies();
     super.didChangeDependencies();
   }
 
@@ -56,17 +55,17 @@ class _MovieListState extends State<MovieList> {
               ),
             ),
             StreamBuilder<String>(
+              initialData: movieBloc.getTypedText,
               stream: movieBloc.typingSearch,
               builder: (context, snapshot) {
                 return BoxSearch(
-                  initialValue: snapshot.data,
                   hintText: 'Pesquise Filmes',
                   onChanged: (value) {
                     if (value.isEmpty) {
                       movieBloc.loadMovies();
                     } else {
-                      movieBloc.changeTypedText(value);
-                      _debouncer.run(() => movieBloc.loadMoviesByTyping());
+                      movieBloc.changeTypedText(value.trim());
+                      if (value.length > 2) _debouncer.run(() => movieBloc.loadMoviesByTyping());
                     }
                   },
                 );
@@ -77,42 +76,37 @@ class _MovieListState extends State<MovieList> {
               builder: (context, snapshot) {
                 return Padding(
                   padding: const EdgeInsets.only(top: 20.0, bottom: 39.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Badge(
-                        title: 'Ação',
-                        id: 28,
-                        selectedGenreID: snapshot.data,
-                        onTouch: () => movieBloc.changeMovieGenre(
-                          28,
+                  child: Container(
+                    height: 50,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        Badge(
+                          title: 'Ação',
+                          id: 28,
+                          selectedGenreID: snapshot.data,
+                          onTouch: () => movieBloc.changeMovieGenre(28),
                         ),
-                      ),
-                      Badge(
-                        title: 'Aventura',
-                        id: 12,
-                        selectedGenreID: snapshot.data,
-                        onTouch: () => movieBloc.changeMovieGenre(
-                          12,
+                        Badge(
+                          title: 'Aventura',
+                          id: 12,
+                          selectedGenreID: snapshot.data,
+                          onTouch: () => movieBloc.changeMovieGenre(12),
                         ),
-                      ),
-                      Badge(
-                        title: 'Fantasia',
-                        id: 14,
-                        selectedGenreID: snapshot.data,
-                        onTouch: () => movieBloc.changeMovieGenre(
-                          14,
+                        Badge(
+                          title: 'Fantasia',
+                          id: 14,
+                          selectedGenreID: snapshot.data,
+                          onTouch: () => movieBloc.changeMovieGenre(14),
                         ),
-                      ),
-                      Badge(
-                        title: 'Comédia',
-                        id: 35,
-                        selectedGenreID: snapshot.data,
-                        onTouch: () => movieBloc.changeMovieGenre(
-                          35,
+                        Badge(
+                          title: 'Comédia',
+                          id: 35,
+                          selectedGenreID: snapshot.data,
+                          onTouch: () => movieBloc.changeMovieGenre(35),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
@@ -141,10 +135,10 @@ class _MovieListState extends State<MovieList> {
                       builder: (BuildContext context, AsyncSnapshot<bool> snapshotConnection) {
                         if (!snapshotConnection.data)
                           return Container(
-                            padding: const EdgeInsets.only(left: 30),
+                            padding: const EdgeInsets.only(left: 30, bottom: 5),
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              '- Mostrando resultados da última conexão com a internet.',
+                              'Mostrando resultados da última conexão com a internet.',
                               style: Theme.of(context).textTheme.caption.copyWith(fontSize: 10),
                             ),
                           );
@@ -162,7 +156,7 @@ class _MovieListState extends State<MovieList> {
                           genreIDs: movies[index].genreIds,
                           imageUrl: Endpoints.getImageMovie(movies[index].posterPath),
                           onClick: () {
-                            movieBloc.loadMovieDetail(movies[index].id);
+                            movieBloc.retriveMovieDetails(movies[index].id);
                             Navigator.pushNamed(context, MovieRouter.MOVIE_DETAIL);
                           },
                         );
