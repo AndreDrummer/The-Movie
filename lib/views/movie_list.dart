@@ -65,7 +65,7 @@ class _MovieListState extends State<MovieList> {
                       movieBloc.loadMovies();
                     } else {
                       movieBloc.changeTypedText(value.trim());
-                      if (value.length > 2) _debouncer.run(() => movieBloc.loadMoviesByTyping());
+                      if (value.length > 2) _debouncer.run(() => movieBloc.loadMoviesBySearching());
                     }
                   },
                 );

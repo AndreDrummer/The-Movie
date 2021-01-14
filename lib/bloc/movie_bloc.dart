@@ -53,7 +53,7 @@ class MovieBloc extends Bloc {
       changeMovieList(movies);
       cacheListMovie(movies);
     } else {
-      await loadMoviesByTyping();
+      await loadMoviesBySearching();
     }
   }
 
@@ -65,7 +65,7 @@ class MovieBloc extends Bloc {
     }
   }
 
-  Future<void> loadMoviesByTyping() async {
+  Future<void> loadMoviesBySearching() async {
     if (!_connectionProvider.getIsConnectedStatus) {
       changeMovieList([]);
     } else {
@@ -103,10 +103,15 @@ class MovieBloc extends Bloc {
     if (mapMovies != null) {
       List<MovieModel> movies = List<MovieModel>.from((mapMovies[CacheKEY.lastMoviesListByGenre.toString()] as List).map((movie) => MovieModel.fromJson(movie)));
       changeMovieList(movies);
-      print(movies.length);
     } else if (lastMoviesLoaded != null) {
       List<MovieModel> movies = List<MovieModel>();
-      movies = (lastMoviesLoaded[CacheKEY.lastMoviesListLoaded.toString()] as List).where((mv) => mv['genre_ids'].contains(getMovieGenre)).map((movie) => MovieModel.fromJson(movie)).toList();
+      movies = (lastMoviesLoaded[CacheKEY.lastMoviesListLoaded.toString()] as List)
+          .where((mv) {
+            print('Movie IDs: ${mv['genre_ids']} - Actual Movie Genre ID: $getMovieGenre - ${mv['genre_ids'].contains(getMovieGenre)}');
+            return mv['genre_ids'].contains(getMovieGenre);
+          })
+          .map((movie) => MovieModel.fromJson(movie))
+          .toList();
       changeMovieList(movies);
     } else {
       changeMovieList([]);
@@ -120,7 +125,7 @@ class MovieBloc extends Bloc {
       List<int> cachedMovieIds = storedList.keys.map((e) => int.parse(e)).toList();
 
       if (cachedMovieIds.contains(movieID)) {
-        changeMovieBeingDetailed(MovieDetailsModel.fromJson(storedList['$movieID']));
+        changeMovieBeingDetailed(MovieDetailsModel.fromJson(json.decode(storedList['$movieID'])));
       } else {
         await loadMovieDetail(movieID);
       }

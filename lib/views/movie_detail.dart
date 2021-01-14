@@ -45,19 +45,19 @@ class MovieDetail extends StatelessWidget {
                   StreamBuilder<MovieDetailsModel>(
                     stream: movieBloc.movieBeingDetailed,
                     builder: (context, snapshotMovieDetail) {
-                      if (snapshotMovieDetail.connectionState == ConnectionState.waiting) {
+                      if (snapshotMovieDetail.connectionState == ConnectionState.waiting || snapshotMovieDetail.data == null) {
                         return LoadingPage(
                           textLoading: 'Carregando detalhes do filme...',
                         );
                       }
 
                       MovieDetailsModel movie = snapshotMovieDetail.data;
-                      String produtoras = movie.productionCompanies.map((e) => e.name).toList().toString().replaceAll('[', '').replaceAll(']', '').replaceAll(',', ', \n');
-                      String elenco = movie.credits.cast.where((element) => element.popularity > 10).map((e) => e.name).toList().toString().replaceAll('[', '').replaceAll(']', '');
+                      String produtoras = movie == null ? '' : movie.productionCompanies.map((e) => e.name).toList().toString().replaceAll('[', '').replaceAll(']', '').replaceAll(',', ', \n');
+                      String elenco = movie == null ? '' : movie.credits.cast.where((element) => element.popularity > 10).map((e) => e.name).toList().toString().replaceAll('[', '').replaceAll(']', '');
                       String director = '';
-                      String budget = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',', initialValue: movie.budget / 1).text;
+                      String budget = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',', initialValue: movie != null ? movie.budget / 1 : 0.0).text;
 
-                      List crewList = movie.credits.crew.where((element) => element.job == 'Director').toList();
+                      List crewList = movie == null ? [] : movie.credits.crew.where((element) => element.job == 'Director').toList();
                       if (crewList.isNotEmpty) director = crewList.first.name;
 
                       return ListView(
@@ -69,19 +69,19 @@ class MovieDetail extends StatelessWidget {
                             child: CardMovie(
                               height: 318,
                               width: 216,
-                              imageUrl: Endpoints.getImageMovie(movie.posterPath),
+                              imageUrl: Endpoints.getImageMovie(movie?.posterPath),
                             ),
                           ),
                           SizedBox(height: 32.0),
                           TextRating(
-                            rating: movie.voteAverage.toString(),
+                            rating: movie == null ? '' : movie.voteAverage.toString(),
                           ),
                           SizedBox(height: 32.0),
                           Container(
                             margin: const EdgeInsets.symmetric(horizontal: 15),
                             alignment: Alignment.center,
                             child: Text(
-                              movie.title.toUpperCase(),
+                              movie == null ? '' : movie.title.toUpperCase(),
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.headline1.copyWith(color: titleColor),
                             ),
@@ -97,7 +97,7 @@ class MovieDetail extends StatelessWidget {
                                   style: Theme.of(context).textTheme.caption.copyWith(fontSize: 10, color: subTitleColor),
                                 ),
                                 Text(
-                                  '${movie.originalTitle}',
+                                  movie == null ? '' : '${movie.originalTitle}',
                                   style: Theme.of(context).textTheme.caption.copyWith(fontSize: 10, color: subTitleColor, fontWeight: FontWeight.w500),
                                 ),
                               ],
@@ -109,11 +109,11 @@ class MovieDetail extends StatelessWidget {
                             children: [
                               SquaredBadge(
                                 text: 'Ano',
-                                text2: '${movie.releaseDate.split('-').first}',
+                                text2: movie == null ? '' : '${movie.releaseDate.split('-').first}',
                               ),
                               SquaredBadge(
                                 text: 'Duração',
-                                text2: '${CommomFunctions.formatClock(movie.runtime)}',
+                                text2: movie == null ? '' : '${CommomFunctions.formatClock(movie.runtime)}',
                               ),
                             ],
                           ),
@@ -124,21 +124,23 @@ class MovieDetail extends StatelessWidget {
                             child: ListView(
                               shrinkWrap: true,
                               scrollDirection: Axis.horizontal,
-                              children: movie.genres
-                                  .map(
-                                    (genre) => SquaredBadge(backgroundColor: Theme.of(context).canvasColor, text: genre.name.toUpperCase()),
-                                  )
-                                  .toList(),
+                              children: movie == null
+                                  ? []
+                                  : movie.genres
+                                      .map(
+                                        (genre) => SquaredBadge(backgroundColor: Theme.of(context).canvasColor, text: genre.name.toUpperCase()),
+                                      )
+                                      .toList(),
                             ),
                           ),
                           SizedBox(height: 63.0),
-                          TextHistory(title: 'Descrição', bodyText: movie.overview),
+                          TextHistory(title: 'Descrição', bodyText: movie == null ? '' : movie.overview),
                           SizedBox(height: 40.0),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20.0),
                             child: SquaredBadge(
                               text: 'ORÇAMENTO',
-                              text2: '${movie.budget == 0 ? '-' : '\$ $budget'}',
+                              text2: movie == null ? '' : '${movie.budget == 0 ? '-' : '\$ $budget'}',
                             ),
                           ),
                           Padding(

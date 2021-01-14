@@ -9,10 +9,10 @@ class NoConnection extends StatelessWidget {
         SizedBox(
           height: MediaQuery.of(context).size.height / 4.5,
         ),
-        Icon(Icons.wifi_off, color: Colors.red, size: 100),
+        Icon(Icons.wifi_off, size: 100),
         Text(
           'Verifique sua conexão com a internet!',
-          style: Theme.of(context).textTheme.caption.copyWith(fontSize: 14, color: Colors.red),
+          style: Theme.of(context).textTheme.caption,
         ),
       ],
     );
