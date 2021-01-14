@@ -48,17 +48,7 @@ class CardMovie extends StatelessWidget {
                     imageUrl: imageUrl,
                     placeholder: placeholderImage,
                     fit: BoxFit.cover,
-                    errorWidget: (context, url, error) => Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.error),
-                        SizedBox(height: 15),
-                        Text(
-                          'Não foi possível carregar imagem!',
-                          style: Theme.of(context).textTheme.caption.copyWith(fontSize: 11),
-                        ),
-                      ],
-                    ),
+                    errorWidget: errorWidget,
                   ),
                 ),
               ),
@@ -100,6 +90,29 @@ class CardMovie extends StatelessWidget {
           Text('Carregando imagem..'),
           SizedBox(height: 30),
           CircularProgressIndicator(),
+        ],
+      ),
+    );
+  }
+
+  Widget errorWidget(BuildContext context, String url, dynamic error) {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/movie_placeholder.png'),
+          fit: BoxFit.fill,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(height: height / 1.6),
+          Icon(Icons.error),
+          SizedBox(height: 15),
+          Text(
+            'Não foi possível carregar imagem!',
+            style: Theme.of(context).textTheme.caption.copyWith(fontSize: 11),
+          ),
         ],
       ),
     );
