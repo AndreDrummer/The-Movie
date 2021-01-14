@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:movie/data/cache.dart';
+import 'package:movie/providers/connection_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:movie/bloc/bloc.dart';
 import 'package:movie/models/movie_model.dart';
@@ -6,11 +8,11 @@ import 'package:movie/services/movie_service.dart';
 import 'package:movie/models/movie_details_model.dart';
 
 class MovieBloc extends Bloc {
-  MovieService _movieService = MovieService();
+  MovieBloc(this._connectionProvider);
 
-  MovieBloc() {
-    loadMovies();
-  }
+  ConnectionProvider _connectionProvider;
+  MovieService _movieService = MovieService();
+  CacheRestApi cacheRestApi = CacheRestApi();
 
   final _typingSearch = BehaviorSubject<String>.seeded('');
   final _movieGenreController = BehaviorSubject<int>.seeded(28);
@@ -24,7 +26,7 @@ class MovieBloc extends Bloc {
 
   void changeMovieGenre(int genreID) {
     _movieGenreController.sink.add(genreID);
-    getTypedText.isEmpty ? loadMovies() : loadMoviesByTyping(getTypedText);
+    loadMovies();
   }
 
   void Function(String) get changeTypedText => _typingSearch.sink.add;
@@ -36,16 +38,46 @@ class MovieBloc extends Bloc {
   List<MovieModel> get getMovieList => _movieListController.value;
 
   Future<void> loadMovies() async {
-    _movieListController.sink.add(await _movieService.getMovieByGenre(getMovieGenre));
+    if (!_connectionProvider.getIsConnectedStatus) {
+      retrieveDataFromCache();
+    } else if (getTypedText.isEmpty) {
+      print('Call loading Movies');
+      List<MovieModel> movies = await _movieService.getMovieByGenre(getMovieGenre);
+      _movieListController.sink.add(movies);
+      cacheData(movies);
+    } else {
+      loadMoviesByTyping();
+    }
   }
 
   Future<void> loadMovieDetail(int movieID) async {
     _movieBeingDetailed.sink.add(await _movieService.getMovieDetail(movieID));
   }
 
-  Future<void> loadMoviesByTyping(String typedText) async {
-    List<MovieModel> list = (await _movieService.searchByKeyword(typedText)).where((element) => element.genreIds.contains(getMovieGenre)).toList();
-    _movieListController.sink.add(list);
+  Future<void> loadMoviesByTyping() async {
+    if (!_connectionProvider.getIsConnectedStatus) {
+      retrieveDataFromCache();
+    } else
+      print('Call loading Movies Typed');
+    List<MovieModel> movies = (await _movieService.searchByKeyword(getTypedText)).where((element) => element.genreIds.contains(getMovieGenre)).toList();
+    _movieListController.sink.add(movies);
+    cacheData(movies);
+  }
+
+  Future<void> retrieveDataFromCache() async {
+    Map<String, dynamic> mapMovies = await CacheRestApi.getMap(getMovieGenre.toString());
+    if (mapMovies != null) {
+      List<MovieModel> movies = List<MovieModel>.from((mapMovies['lastMovieList'] as List).map((movie) => MovieModel.fromJson(movie)));
+      print(movies.length);
+      _movieListController.sink.add(movies);
+    } else {
+      _movieListController.sink.add([]);
+    }
+  }
+
+  void cacheData(List<MovieModel> movies) {
+    List<Map<String, dynamic>> cachedData = movies.map((e) => e.toJson()).toList();
+    CacheRestApi.saveMap(getMovieGenre.toString(), {'lastMovieList': cachedData});
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie/providers/connection_provider.dart';
 import 'package:movie/utils/routes.dart';
 import 'package:movie/widgets/badge.dart';
 import 'package:movie/bloc/movie_bloc.dart';
@@ -10,13 +11,34 @@ import 'package:movie/bloc/bloc_provider.dart';
 import 'package:movie/services/endpoints.dart';
 import 'package:movie/widgets/loading_page.dart';
 import 'package:movie/widgets/no_movie_founded.dart';
+import 'package:provider/provider.dart';
 
-class MovieList extends StatelessWidget {
+class MovieList extends StatefulWidget {
+  @override
+  _MovieListState createState() => _MovieListState();
+}
+
+class _MovieListState extends State<MovieList> {
   final _debouncer = Debouncer(milliseconds: 500);
+  ConnectionProvider connectionProvider;
+  MovieBloc movieBloc;
+
+  @override
+  void didChangeDependencies() {
+    connectionProvider = Provider.of<ConnectionProvider>(context);
+    movieBloc = BlocProvider.of<MovieBloc>(context);
+    if (!connectionProvider.getIsConnectedStatus) {
+      print('Vai lá');
+      movieBloc.retrieveDataFromCache();
+    }
+    if (movieBloc.getMovieList.isEmpty) {
+      movieBloc.loadMovies();
+    }
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final MovieBloc movieBloc = BlocProvider.of<MovieBloc>(context);
     return Scaffold(
       resizeToAvoidBottomPadding: true,
       resizeToAvoidBottomInset: true,
@@ -44,7 +66,7 @@ class MovieList extends StatelessWidget {
                       movieBloc.loadMovies();
                     } else {
                       movieBloc.changeTypedText(value);
-                      _debouncer.run(() => movieBloc.loadMoviesByTyping(value));
+                      _debouncer.run(() => movieBloc.loadMoviesByTyping());
                     }
                   },
                 );
@@ -97,6 +119,7 @@ class MovieList extends StatelessWidget {
             ),
             StreamBuilder<List<MovieModel>>(
               stream: movieBloc.movieList,
+              initialData: movieBloc.getMovieList,
               builder: (BuildContext context, AsyncSnapshot<List<MovieModel>> snapshot) {
                 List<MovieModel> movies = snapshot.data;
 
@@ -105,25 +128,47 @@ class MovieList extends StatelessWidget {
                 }
 
                 if (movies.isEmpty) {
-                  return NoMovieFound();
+                  return NoMovieFound(
+                    connected: connectionProvider.getIsConnectedStatus,
+                  );
                 }
 
-                return ListView.builder(
-                  key: UniqueKey(),
-                  shrinkWrap: true,
-                  physics: ScrollPhysics(),
-                  itemCount: movies.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return CardMovie(
-                      title: movies[index].title,
-                      genreIDs: movies[index].genreIds,
-                      imageUrl: Endpoints.getImageMovie(movies[index].posterPath),
-                      onClick: () {
-                        movieBloc.loadMovieDetail(movies[index].id);
-                        Navigator.pushNamed(context, MovieRouter.MOVIE_DETAIL);
+                return Column(
+                  children: [
+                    StreamBuilder<bool>(
+                      initialData: connectionProvider.getIsConnectedStatus,
+                      stream: connectionProvider.isConnected,
+                      builder: (BuildContext context, AsyncSnapshot<bool> snapshotConnection) {
+                        if (!snapshotConnection.data)
+                          return Container(
+                            padding: const EdgeInsets.only(left: 30),
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              '- Mostrando resultados da última conexão com a internet.',
+                              style: Theme.of(context).textTheme.caption.copyWith(fontSize: 10),
+                            ),
+                          );
+                        return Container();
                       },
-                    );
-                  },
+                    ),
+                    ListView.builder(
+                      key: UniqueKey(),
+                      shrinkWrap: true,
+                      physics: ScrollPhysics(),
+                      itemCount: movies.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return CardMovie(
+                          title: movies[index].title,
+                          genreIDs: movies[index].genreIds,
+                          imageUrl: Endpoints.getImageMovie(movies[index].posterPath),
+                          onClick: () {
+                            movieBloc.loadMovieDetail(movies[index].id);
+                            Navigator.pushNamed(context, MovieRouter.MOVIE_DETAIL);
+                          },
+                        );
+                      },
+                    ),
+                  ],
                 );
               },
             )

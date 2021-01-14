@@ -22,7 +22,7 @@ class MovieDetail extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: Column(
+      body: ListView(
         children: [
           ButtonBack(),
           SizedBox(height: height / 3),
@@ -44,99 +44,99 @@ class MovieDetail extends StatelessWidget {
                 List crewList = movie.credits.crew.where((element) => element.job == 'Director').toList();
                 if (crewList.isNotEmpty) director = crewList.first.name;
 
-                return Expanded(
-                  child: ListView(
-                    children: [
-                      ButtonBack(),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 72.0),
-                        child: Container(
-                          height: 318,
-                          width: 216,
-                          child: CardMovie(
-                            imageUrl: Endpoints.getImageMovie(movie.backdropPath),
-                          ),
+                return ListView(
+                  shrinkWrap: true,
+                  physics: ScrollPhysics(),
+                  children: [
+                    ButtonBack(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 72.0),
+                      child: Container(
+                        height: 318,
+                        width: 216,
+                        child: CardMovie(
+                          imageUrl: Endpoints.getImageMovie(movie.backdropPath),
                         ),
                       ),
-                      SizedBox(height: 32.0),
-                      TextRating(
-                        rating: movie.voteAverage.toString(),
+                    ),
+                    SizedBox(height: 32.0),
+                    TextRating(
+                      rating: movie.voteAverage.toString(),
+                    ),
+                    SizedBox(height: 32.0),
+                    Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        movie.title.toUpperCase(),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headline1.copyWith(color: titleColor),
                       ),
-                      SizedBox(height: 32.0),
-                      Container(
-                        alignment: Alignment.center,
-                        child: Text(
-                          movie.title.toUpperCase(),
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.headline1.copyWith(color: titleColor),
+                    ),
+                    SizedBox(height: 12.0),
+                    Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Título Original: ${movie.originalTitle}',
+                        style: Theme.of(context).textTheme.caption.copyWith(fontSize: 10, color: subTitleColor),
+                      ),
+                    ),
+                    SizedBox(height: 32.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SquaredBadge(
+                          text: 'Ano',
+                          text2: '${movie.releaseDate.split('-').first}',
                         ),
-                      ),
-                      SizedBox(height: 12.0),
-                      Container(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Título Original: ${movie.originalTitle}',
-                          style: Theme.of(context).textTheme.caption.copyWith(fontSize: 10, color: subTitleColor),
+                        SquaredBadge(
+                          text: 'Duração',
+                          text2: '${CommomFunctions.formatClock(movie.runtime)}',
                         ),
+                      ],
+                    ),
+                    SizedBox(height: 18.0),
+                    Container(
+                      alignment: Alignment.center,
+                      height: 45,
+                      child: ListView(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        children: movie.genres
+                            .map(
+                              (genre) => SquaredBadge(backgroundColor: Theme.of(context).canvasColor, text: genre.name.toUpperCase()),
+                            )
+                            .toList(),
                       ),
-                      SizedBox(height: 32.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SquaredBadge(
-                            text: 'Ano',
-                            text2: '${movie.releaseDate.split('-').first}',
-                          ),
-                          SquaredBadge(
-                            text: 'Duração',
-                            text2: '${CommomFunctions.formatClock(movie.runtime)}',
-                          ),
-                        ],
+                    ),
+                    SizedBox(height: 63.0),
+                    TextHistory(title: 'DESCRIÇÃO', bodyText: movie.overview),
+                    SizedBox(height: 40.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: SquaredBadge(
+                        text: 'ORÇAMENTO',
+                        text2: '${movie.budget == 0 ? '-' : '\$ $budget'}',
                       ),
-                      SizedBox(height: 18.0),
-                      Container(
-                        alignment: Alignment.center,
-                        height: 45,
-                        child: ListView(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          children: movie.genres
-                              .map(
-                                (genre) => SquaredBadge(backgroundColor: Theme.of(context).canvasColor, text: genre.name.toUpperCase()),
-                              )
-                              .toList(),
-                        ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: SquaredBadge(
+                        text: 'PRODUTORAS',
+                        text2: produtoras,
                       ),
-                      SizedBox(height: 63.0),
-                      TextHistory(title: 'DESCRIÇÃO', bodyText: movie.overview),
-                      SizedBox(height: 40.0),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: SquaredBadge(
-                          text: 'ORÇAMENTO',
-                          text2: '${movie.budget == 0 ? '-' : '\$ $budget'}',
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: SquaredBadge(
-                          text: 'PRODUTORAS',
-                          text2: produtoras,
-                        ),
-                      ),
-                      SizedBox(height: 40.0),
-                      TextHistory(
-                        title: 'Diretor',
-                        bodyText: director.isEmpty ? '-' : director,
-                      ),
-                      SizedBox(height: 32.0),
-                      TextHistory(
-                        title: 'Elenco',
-                        bodyText: elenco.isEmpty ? '-' : elenco,
-                      ),
-                      SizedBox(height: 90.0),
-                    ],
-                  ),
+                    ),
+                    SizedBox(height: 40.0),
+                    TextHistory(
+                      title: 'Diretor',
+                      bodyText: director.isEmpty ? '-' : director,
+                    ),
+                    SizedBox(height: 32.0),
+                    TextHistory(
+                      title: 'Elenco',
+                      bodyText: elenco.isEmpty ? '-' : elenco,
+                    ),
+                    SizedBox(height: 90.0),
+                  ],
                 );
               }),
         ],
