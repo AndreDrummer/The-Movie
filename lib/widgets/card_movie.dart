@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie/utils/functions.dart';
 
@@ -28,21 +29,32 @@ class CardMovie extends StatelessWidget {
         fit: StackFit.passthrough,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+            padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 16.0),
             child: Card(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(10),
               ),
               elevation: 6.0,
               child: Container(
                 width: 320,
                 height: 470,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(25),
-                  child: Image.network(
-                    imageUrl,
-                    loadingBuilder: loadingImage,
+                  borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    placeholder: placeholderImage,
                     fit: BoxFit.fill,
+                    errorWidget: (context, url, error) => Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error),
+                        SizedBox(height: 15),
+                        Text(
+                          'Não foi possível carregar imagem!',
+                          style: Theme.of(context).textTheme.caption.copyWith(fontSize: 11),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -76,8 +88,7 @@ class CardMovie extends StatelessWidget {
     );
   }
 
-  Widget loadingImage(BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
-    if (loadingProgress == null) return child;
+  Widget placeholderImage(BuildContext context, String text) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

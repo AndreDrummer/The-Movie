@@ -29,7 +29,7 @@ dependencies:
   google_fonts: ^1.1.1
   connectivity: ^0.4.8+6
   flutter_masked_text: ^0.8.0  
-  cached_network_image: ^2.5.0
+  cached_network_image: ^2.5.0  
   shared_preferences: '>=0.5.12+4 <2.0.0'
 
 

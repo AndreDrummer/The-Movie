@@ -17,7 +17,7 @@ class SquaredBadge extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(5),
         color: backgroundColor,
         border: Border.all(
           style: BorderStyle.solid,
@@ -46,7 +46,13 @@ class SquaredBadge extends StatelessWidget {
             )
           : Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
-              child: Text(text),
+              child: Text(
+                text,
+                style: Theme.of(context).textTheme.caption.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
             ),
     );
   }

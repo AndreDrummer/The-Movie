@@ -55,11 +55,11 @@ class _MovieListState extends State<MovieList> {
                 ),
               ),
             ),
-            // Deve ser capaz de guardar o texto digitado e fazer pesqusia na API.
             StreamBuilder<String>(
               stream: movieBloc.typingSearch,
               builder: (context, snapshot) {
                 return BoxSearch(
+                  initialValue: snapshot.data,
                   hintText: 'Pesquise Filmes',
                   onChanged: (value) {
                     if (value.isEmpty) {
@@ -76,7 +76,7 @@ class _MovieListState extends State<MovieList> {
               stream: movieBloc.movieGenre,
               builder: (context, snapshot) {
                 return Padding(
-                  padding: const EdgeInsets.only(top: 20.0, bottom: 37.0),
+                  padding: const EdgeInsets.only(top: 20.0, bottom: 39.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -123,7 +123,7 @@ class _MovieListState extends State<MovieList> {
               builder: (BuildContext context, AsyncSnapshot<List<MovieModel>> snapshot) {
                 List<MovieModel> movies = snapshot.data;
 
-                if (snapshot.connectionState == ConnectionState.waiting) {
+                if (snapshot.connectionState == ConnectionState.waiting || movieBloc.getIsLoadingMovies) {
                   return LoadingPage();
                 }
 
