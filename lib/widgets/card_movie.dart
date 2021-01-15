@@ -57,26 +57,47 @@ class CardMovie extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 68,
-            left: 46,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title.toUpperCase(),
-                  style: Theme.of(context).textTheme.headline1.copyWith(color: Colors.white, fontSize: 14.0),
+            bottom: 20,
+            left: 24,
+            child: Container(
+              alignment: Alignment.bottomLeft,
+              width: width + 24,
+              height: height / 2,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  begin: Alignment(0.0, 0.8),
+                  end: Alignment(0.0, 0.0),
+                  colors: [
+                    Color.fromRGBO(0, 0, 0, 1),
+                    Color.fromRGBO(0, 0, 0, 0.6331),
+                    Color.fromRGBO(0, 0, 0, 0.01),
+                  ],
                 ),
-                SizedBox(height: 12),
-                Row(
-                  children: subTitles.map((subtitle) {
-                    return Text(
-                      subtitle + (subTitles.indexOf(subtitle) < subTitles.length - 1 ? ' - ' : ''),
-                      style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white, fontSize: 10.0),
-                    );
-                  }).toList(),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 22.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      title.toUpperCase(),
+                      style: Theme.of(context).textTheme.headline1.copyWith(color: Colors.white, fontSize: 14.0),
+                    ),
+                    SizedBox(height: 12),
+                    Row(
+                      children: subTitles.map((subtitle) {
+                        return Text(
+                          subtitle + (subTitles.indexOf(subtitle) < subTitles.length - 1 ? ' - ' : ''),
+                          style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white, fontSize: 10.0),
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(height: 32),
+                  ],
                 ),
-              ],
+              ),
             ),
           )
         ],
