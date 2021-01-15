@@ -39,8 +39,8 @@ class ConnectionProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    _connectivitySubscription.cancel();
-    _isConnected.close();
     super.dispose();
+    _isConnected.close();
+    _connectivitySubscription.cancel();
   }
 }

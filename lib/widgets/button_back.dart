@@ -5,16 +5,18 @@ class ButtonBack extends StatelessWidget {
     this.callback,
   });
 
+  final Function() callback;
   final Color textColor = Color(0XFF6D7070);
   final Color buttonColor = Color(0XFFFAFAFA);
-  final Function() callback;
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
     return GestureDetector(
-      onTap: () => callback(),
+      onTap: () {
+        callback != null ? callback() : Navigator.maybePop(context);
+      },
       child: Padding(
         padding: EdgeInsets.fromLTRB(20.0, 48.0, width / 1.5, 65.0),
         child: Card(

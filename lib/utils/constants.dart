@@ -1,9 +1,16 @@
+import 'package:movie/utils/key_generator.dart';
+
 enum CacheKEY {
+  movieDetails,
   lastMoviesListLoaded,
   lastMoviesListByGenre,
-  movieDetails,
 }
 
 class Constantes {
-  static const String api = 'cc17540d79d2aefd3128c824798ed6a0';
+  Constantes() {
+    apiKey = CesarCripto.decode(encodeArrayKey, 256).toLowerCase();
+  }
+
+  List<String> encodeArrayKey = ['Y', 'Y', '23', '3', '1', '0', '22', 'Z', '3', '5', 'Z', '24', 'W', 'A', 'B', 'Z', '25', '23', '24', '4', 'Y', '4', '24', '0', '3', '5', '4', 'A', 'Z', '2', 'W', '22'];
+  String apiKey;
 }

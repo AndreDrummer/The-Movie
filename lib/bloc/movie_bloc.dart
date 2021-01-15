@@ -18,8 +18,8 @@ class MovieBloc extends Bloc {
   final _typingSearch = BehaviorSubject<String>.seeded('');
   final _isLoadingMovies = BehaviorSubject<bool>.seeded(false);
   final _movieGenreController = BehaviorSubject<int>.seeded(28);
-  final _movieListController = BehaviorSubject<List<MovieModel>>.seeded([]);
   final _movieBeingDetailed = BehaviorSubject<MovieDetailsModel>();
+  final _movieListController = BehaviorSubject<List<MovieModel>>.seeded([]);
 
   Stream<String> get typingSearch => _typingSearch.stream;
   Stream<int> get movieGenre => _movieGenreController.stream;
@@ -48,8 +48,11 @@ class MovieBloc extends Bloc {
     retrieveListMovie();
     if (getTypedText.isEmpty && _connectionProvider.getIsConnectedStatus) {
       if (getMovieList.isEmpty) changeIsLoadingMovies(true);
+
       List<MovieModel> movies = await _movieService.getMovieByGenre(getMovieGenre);
+
       if (getIsLoadingMovies) changeIsLoadingMovies(false);
+
       changeMovieList(movies);
       cacheListMovie(movies);
     } else {
@@ -70,7 +73,7 @@ class MovieBloc extends Bloc {
       changeMovieList([]);
     } else {
       changeIsLoadingMovies(true);
-      List<MovieModel> movies = (await _movieService.searchByKeyword(getTypedText)).where((element) => element.genreIds.contains(getMovieGenre)).toList();
+      List<MovieModel> movies = (await _movieService.searchByKeyword(getTypedText.trim())).where((element) => element.genreIds.contains(getMovieGenre)).toList();
       changeMovieList(movies);
       cacheListMovie(movies);
       changeIsLoadingMovies(false);
@@ -105,16 +108,8 @@ class MovieBloc extends Bloc {
       changeMovieList(movies);
     } else if (lastMoviesLoaded != null) {
       List<MovieModel> movies = List<MovieModel>();
-      movies = (lastMoviesLoaded[CacheKEY.lastMoviesListLoaded.toString()] as List)
-          .where((mv) {
-            print('Movie IDs: ${mv['genre_ids']} - Actual Movie Genre ID: $getMovieGenre - ${mv['genre_ids'].contains(getMovieGenre)}');
-            return mv['genre_ids'].contains(getMovieGenre);
-          })
-          .map((movie) => MovieModel.fromJson(movie))
-          .toList();
+      movies = (lastMoviesLoaded[CacheKEY.lastMoviesListLoaded.toString()] as List).where((mv) => mv['genre_ids'].contains(getMovieGenre)).map((movie) => MovieModel.fromJson(movie)).toList();
       changeMovieList(movies);
-    } else {
-      changeMovieList([]);
     }
   }
 

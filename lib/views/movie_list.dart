@@ -30,8 +30,6 @@ class _MovieListState extends State<MovieList> {
     if (!connectionProvider.getIsConnectedStatus) {
       movieBloc.retrieveListMovie();
     }
-    // if (movieBloc.getMovieList.isEmpty) {
-    // }
     movieBloc.loadMovies();
     super.didChangeDependencies();
   }
@@ -59,9 +57,14 @@ class _MovieListState extends State<MovieList> {
               stream: movieBloc.typingSearch,
               builder: (context, snapshot) {
                 return BoxSearch(
+                  initialValue: snapshot.data,
                   hintText: 'Pesquise Filmes',
+                  onSubmitted: (_) {
+                    if (snapshot.data.trim().isEmpty) movieBloc.loadMovies();
+                  },
                   onChanged: (value) {
                     if (value.isEmpty) {
+                      movieBloc.changeTypedText(value.trim());
                       movieBloc.loadMovies();
                     } else {
                       movieBloc.changeTypedText(value.trim());

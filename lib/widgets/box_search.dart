@@ -1,14 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class BoxSearch extends StatelessWidget {
+class BoxSearch extends StatefulWidget {
   BoxSearch({
     this.hintText,
     this.onChanged,
+    this.onSubmitted,
+    this.initialValue,
   });
 
   final String hintText;
+  final String initialValue;
   final Function(String) onChanged;
+  final Function(String) onSubmitted;
+
+  @override
+  _BoxSearchState createState() => _BoxSearchState();
+}
+
+class _BoxSearchState extends State<BoxSearch> {
+  TextEditingController _controller = TextEditingController();
+
+  @override
+  void didChangeDependencies() {
+    _controller.text = widget.initialValue;
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +37,7 @@ class BoxSearch extends StatelessWidget {
           color: Color(0XFFF1F3F5),
         ),
         child: TextFormField(
+          controller: _controller,
           cursorColor: Colors.black,
           textInputAction: TextInputAction.go,
           decoration: InputDecoration(
@@ -32,10 +50,11 @@ class BoxSearch extends StatelessWidget {
             ),
             enabledBorder: _textInputBorder(),
             focusedBorder: _textInputBorder(),
-            hintText: hintText,
+            hintText: widget.hintText,
             hintStyle: Theme.of(context).textTheme.caption,
           ),
-          onChanged: (String value) => onChanged(value),
+          onFieldSubmitted: (String value) => widget.onSubmitted(value),
+          onChanged: (String value) => widget.onChanged(value),
         ),
       ),
     );

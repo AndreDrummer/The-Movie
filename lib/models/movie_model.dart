@@ -38,14 +38,14 @@ class MovieModel {
     video = json['video'];
     overview = json['overview'];
     voteCount = json['vote_count'];
-    popularity = json['popularity'];
+    popularity = double.parse(json['popularity'].toString()) / 1;
     posterPath = json['poster_path'];
     releaseDate = json['release_date'];
     backdropPath = json['backdrop_path'];
     originalTitle = json['original_title'];
     genreIds = json['genre_ids'].cast<int>();
     originalLanguage = json['original_language'];
-    voteAverage = json['vote_average'].runtimeType == int ? double.parse(json['vote_average'].toString() + '.0') : json['vote_average'];
+    voteAverage = double.parse(json['vote_average'].toString()) / 1;
   }
 
   Map<String, dynamic> toJson() {

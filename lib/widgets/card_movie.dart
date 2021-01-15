@@ -1,30 +1,32 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie/utils/functions.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class CardMovie extends StatelessWidget {
   CardMovie({
     this.onClick,
     this.title = '',
-    this.genreIDs = const [],
-    @required this.imageUrl,
-    this.height = 470,
     this.width = 320,
+    this.height = 470,
+    @required this.imageUrl,
+    this.genreIDs = const [],
   });
 
-  final Function onClick;
   final String title;
-  final List<int> genreIDs;
-  final String imageUrl;
   final double width;
   final double height;
+  final String imageUrl;
+  final Function onClick;
+  final List<int> genreIDs;
 
   @override
   Widget build(BuildContext context) {
     List<String> subTitles = [];
+
     genreIDs.forEach((element) {
       subTitles.add(CommomFunctions.getGenreByID(element));
     });
+
     subTitles.removeWhere((element) => element == null);
 
     return GestureDetector(
@@ -104,14 +106,14 @@ class CardMovie extends StatelessWidget {
         ),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          SizedBox(height: height / 1.6),
-          Icon(Icons.error),
+          SizedBox(height: 50),
+          Icon(Icons.error, color: Colors.grey[400]),
           SizedBox(height: 15),
           Text(
             'Não foi possível carregar imagem!',
-            style: Theme.of(context).textTheme.caption.copyWith(fontSize: 11),
+            style: Theme.of(context).textTheme.caption.copyWith(fontSize: 11, color: Colors.grey[400]),
           ),
         ],
       ),

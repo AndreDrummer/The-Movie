@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:movie/bloc/bloc.dart';
+import 'package:flutter/material.dart';
 
 class BlocProvider<T extends Bloc> extends InheritedWidget {
   BlocProvider({
