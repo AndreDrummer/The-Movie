@@ -61,20 +61,22 @@ class CardMovie extends StatelessWidget {
             left: 24,
             child: Container(
               alignment: Alignment.bottomLeft,
-              width: width + 24,
+              width: width + (title.isEmpty ? 0 : 24),
               height: height / 2,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                gradient: LinearGradient(
-                  begin: Alignment(0.0, 0.8),
-                  end: Alignment(0.0, 0.0),
-                  colors: [
-                    Color.fromRGBO(0, 0, 0, 1),
-                    Color.fromRGBO(0, 0, 0, 0.6331),
-                    Color.fromRGBO(0, 0, 0, 0.01),
-                  ],
-                ),
-              ),
+              decoration: title.isEmpty
+                  ? null
+                  : BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      gradient: LinearGradient(
+                        begin: Alignment(0.0, 0.8),
+                        end: Alignment(0.0, 0.0),
+                        colors: [
+                          Color.fromRGBO(0, 0, 0, 1),
+                          Color.fromRGBO(0, 0, 0, 0.6331),
+                          Color.fromRGBO(0, 0, 0, 0.01),
+                        ],
+                      ),
+                    ),
               child: Padding(
                 padding: const EdgeInsets.only(left: 22.0),
                 child: Column(
