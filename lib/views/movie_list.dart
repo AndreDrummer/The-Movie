@@ -58,7 +58,7 @@ class _MovieListState extends State<MovieList> {
               builder: (context, snapshot) {
                 return BoxSearch(
                   initialValue: snapshot.data,
-                  hintText: 'Pesquise Filmes',
+                  hintText: 'Pesquise filmes',
                   onSubmitted: (_) {
                     if (snapshot.data.trim().isEmpty) movieBloc.loadMovies();
                   },
